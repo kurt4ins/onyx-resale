@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ seller.name }} - Onyx{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 40px;">
+    <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 30px;">
+        {% if seller.image %}
+            <img src="{{ seller.image.url }}" alt="{{ seller.name }}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;">
+        {% endif %}
+        <div>
+            <h1 style="font-size: 32px; margin-bottom: 8px;">{{ seller.name }}</h1>
+            {% if seller.is_verified %}
+                <span style="font-size: 14px; color: #666;">✓ Верифицированный продавец</span>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if avg_rating %}
+        <div style="margin-bottom: 20px;">
+            <div style="font-size: 24px; font-weight: 600; margin-bottom: 4px;">{{ avg_rating }}</div>
+            <div style="font-size: 14px; color: #666;">На основе {{ total_reviews }} отзывов</div>
+        </div>
+    {% endif %}
+</div>
+
+{% if products %}
+    <h2 style="font-size: 24px; margin-bottom: 30px;">Товары продавца</h2>
+    <div class="products-grid">
+        {% for product in products %}
+            <a href="{% url 'catalog:product_detail' product.pk %}" class="product-card">
+                {% if product.images.all %}
+                    <img 
+                        src="{{ product.images.first.image.url }}" 
+                        alt="{{ product.title }}"
+                        class="product-image"
+                    >
+                {% else %}
+                    <div class="product-image" style="display: flex; align-items: center; justify-content: center; color: #999;">
+                        Нет изображения
+                    </div>
+                {% endif %}
+                <div class="product-title">{{ product.title }}</div>
+                <div class="product-price">{{ product.price|floatformat:0 }} ₽</div>
+            </a>
+        {% endfor %}
+    </div>
+{% else %}
+    <p style="color: #666; text-align: center; padding: 40px;">У продавца пока нет товаров</p>
+{% endif %}
+
+{% if reviews %}
+    <div style="margin-top: 60px;">
+        <h2 style="font-size: 24px; margin-bottom: 30px;">Отзывы</h2>
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+            {% for review in reviews %}
+                <div style="padding: 20px; border: 1px solid #e5e5e5; border-radius: 8px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                        <div>
+                            <strong>{{ review.customer.name }}</strong>
+                            <div style="font-size: 14px; color: #666; margin-top: 4px;">{{ review.created_at|date:"d.m.Y" }}</div>
+                        </div>
+                        <div style="font-size: 18px; font-weight: 600;">{{ review.rating }} ⭐</div>
+                    </div>
+                    <p style="line-height: 1.6;">{{ review.comment }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}
+{% endblock %}
+

@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.title }} - Onyx{% endblock %}
+
+{% block content %}
+<div class="product-detail">
+    <div class="product-images">
+        {% if product.images.all %}
+            <img 
+                src="{{ product.images.first.image.url }}" 
+                alt="{{ product.title }}"
+                class="product-main-image"
+            >
+            {% if product.images.count > 1 %}
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 12px;">
+                    {% for image in product.images.all|slice:"1:5" %}
+                        <img 
+                            src="{{ image.image.url }}" 
+                            alt="{{ product.title }}"
+                            style="width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 4px; cursor: pointer;"
+                            onclick="document.querySelector('.product-main-image').src='{{ image.image.url }}'"
+                        >
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="product-main-image" style="display: flex; align-items: center; justify-content: center; color: #999;">
+                Нет изображения
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="product-info">
+        <h1>{{ product.title }}</h1>
+        <div class="product-price-large">{{ product.price|floatformat:0 }} ₽</div>
+        
+        <div class="product-meta" style="margin-bottom: 24px;">
+            {% if product.brand %}
+                <div><strong>Бренд:</strong> {{ product.brand.name }}</div>
+            {% endif %}
+            {% if product.size or product.custom_size %}
+                <div><strong>Размер:</strong> {{ product.display_size }}</div>
+            {% endif %}
+            <div><strong>Состояние:</strong> {{ product.get_condition_display }}</div>
+            {% if product.seller %}
+                <div>
+                    <strong>Продавец:</strong> 
+                    <a href="{% url 'accounts:seller_public' product.seller.id %}" style="color: #000; text-decoration: underline;">
+                        {{ product.seller.name }}
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="product-description">
+            {{ product.description|linebreaks }}
+        </div>
+
+        <div class="product-actions">
+            {% if user.is_authenticated and user.customer %}
+                {% if product.is_active and not product.is_sold and product.quantity > 0 %}
+                    <a 
+                        href="{% url 'orders:add_to_cart' product.id %}" 
+                        class="btn btn-inline"
+                        style="text-decoration: none; display: inline-block; margin-right: 12px;"
+                    >
+                        Добавить в корзину
+                    </a>
+                {% else %}
+                    <button class="btn btn-secondary btn-inline" disabled style="margin-right: 12px;">
+                        Товар недоступен
+                    </button>
+                {% endif %}
+                <a 
+                    href="{% url 'catalog:toggle_wishlist' product.id %}" 
+                    class="wishlist-btn {% if in_wishlist %}active{% endif %}"
+                >
+                    {% if in_wishlist %}В избранном{% else %}В избранное{% endif %}
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% if similar_products %}
+    <div style="margin-top: 60px;">
+        <h2 style="font-size: 24px; margin-bottom: 30px;">Похожие товары</h2>
+        <div class="products-grid">
+            {% for similar in similar_products %}
+                <a href="{% url 'catalog:product_detail' similar.pk %}" class="product-card">
+                    {% if similar.images.all %}
+                        <img 
+                            src="{{ similar.images.first.image.url }}" 
+                            alt="{{ similar.title }}"
+                            class="product-image"
+                        >
+                    {% else %}
+                        <div class="product-image" style="display: flex; align-items: center; justify-content: center; color: #999;">
+                            Нет изображения
+                        </div>
+                    {% endif %}
+                    <div class="product-title">{{ similar.title }}</div>
+                    <div class="product-price">{{ similar.price|floatformat:0 }} ₽</div>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}
+{% endblock %}
+

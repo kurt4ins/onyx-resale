@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Удалить товар - Onyx{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto;">
+    <h1 style="font-size: 32px; margin-bottom: 30px;">Удалить товар</h1>
+
+    <div style="background: #ffebee; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+        <p style="color: #c62828; margin-bottom: 12px;"><strong>Вы уверены, что хотите удалить этот товар?</strong></p>
+        <p style="color: #666;">Это действие нельзя отменить.</p>
+    </div>
+
+    <div style="background: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+        <h2 style="font-size: 20px; margin-bottom: 12px;">{{ object.title }}</h2>
+        {% if object.brand %}
+            <p style="color: #666; margin-bottom: 8px;">{{ object.brand.name }}</p>
+        {% endif %}
+        <p style="font-size: 18px; font-weight: 600;">{{ object.price|floatformat:0 }} ₽</p>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <div style="display: flex; gap: 12px;">
+            <button type="submit" class="btn btn-inline" style="background: #c62828;">Удалить</button>
+            <a href="{% url 'accounts:seller_products' %}" class="btn btn-secondary btn-inline" style="text-decoration: none; text-align: center;">Отмена</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+

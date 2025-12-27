@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Каталог - Onyx{% endblock %}
+
+{% block content %}
+<div class="search-bar">
+    <form method="get" action="{% url 'catalog:product_list' %}" class="search-form">
+        <input 
+            type="text" 
+            name="q" 
+            value="{{ search_query }}" 
+            placeholder="Найти товар..." 
+            class="search-input"
+        >
+        <button type="submit" class="search-btn">Найти</button>
+    </form>
+</div>
+
+<div class="filters">
+    <form method="get" action="{% url 'catalog:product_list' %}" style="display: contents;">
+        {% if search_query %}
+            <input type="hidden" name="q" value="{{ search_query }}">
+        {% endif %}
+        
+        <select name="category" class="filter-select" onchange="this.form.submit()">
+            <option value="">Все категории</option>
+            {% for category in categories %}
+                <option value="{{ category.slug }}" {% if selected_category == category.slug %}selected{% endif %}>
+                    {{ category.name }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <select name="brand" class="filter-select" onchange="this.form.submit()">
+            <option value="">Все бренды</option>
+            {% for brand in brands %}
+                <option value="{{ brand.slug }}" {% if selected_brand == brand.slug %}selected{% endif %}>
+                    {{ brand.name }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <select name="condition" class="filter-select" onchange="this.form.submit()">
+            <option value="">Все состояния</option>
+            <option value="new" {% if selected_condition == 'new' %}selected{% endif %}>Новое с биркой</option>
+            <option value="excellent" {% if selected_condition == 'excellent' %}selected{% endif %}>Отличное</option>
+            <option value="good" {% if selected_condition == 'good' %}selected{% endif %}>Хорошее</option>
+            <option value="fair" {% if selected_condition == 'fair' %}selected{% endif %}>Удовлетворительное</option>
+        </select>
+
+        <select name="sort" class="filter-select" onchange="this.form.submit()">
+            <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>Новинки</option>
+            <option value="price_asc" {% if sort_by == 'price_asc' %}selected{% endif %}>Цена: по возрастанию</option>
+            <option value="price_desc" {% if sort_by == 'price_desc' %}selected{% endif %}>Цена: по убыванию</option>
+        </select>
+    </form>
+</div>
+
+{% if products %}
+    <div class="products-grid">
+        {% for product in products %}
+            <a href="{% url 'catalog:product_detail' product.pk %}" class="product-card">
+                {% if product.images.all %}
+                    <img 
+                        src="{{ product.images.first.image.url }}" 
+                        alt="{{ product.title }}"
+                        class="product-image"
+                    >
+                {% else %}
+                    <div class="product-image" style="display: flex; align-items: center; justify-content: center; color: #999;">
+                        Нет изображения
+                    </div>
+                {% endif %}
+                <div class="product-title">{{ product.title }}</div>
+                <div class="product-price">{{ product.price|floatformat:0 }} ₽</div>
+                <div class="product-meta">
+                    {% if product.brand %}{{ product.brand.name }}{% endif %}
+                    {% if product.size %} • Размер: {{ product.display_size }}{% endif %}
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+
+    {% if is_paginated %}
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_brand %}&brand={{ selected_brand }}{% endif %}{% if selected_condition %}&condition={{ selected_condition }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">←</a>
+            {% endif %}
+
+            <span class="current">
+                Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_brand %}&brand={{ selected_brand }}{% endif %}{% if selected_condition %}&condition={{ selected_condition }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">→</a>
+            {% endif %}
+        </div>
+    {% endif %}
+{% else %}
+    <div style="text-align: center; padding: 60px 20px;">
+        <p style="font-size: 18px; color: #666;">Товары не найдены</p>
+        <a href="{% url 'catalog:product_list' %}" style="margin-top: 20px; display: inline-block; color: #000; text-decoration: underline;">Показать все товары</a>
+    </div>
+{% endif %}
+{% endblock %}
+

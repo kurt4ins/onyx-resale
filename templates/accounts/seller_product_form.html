@@ -1,0 +1,280 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if object %}Редактировать товар{% else %}Создать товар{% endif %} - Onyx{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h1 class="dashboard-title">{% if object %}Редактировать товар{% else %}Создать товар{% endif %}</h1>
+</div>
+
+<div class="seller-nav">
+    <a href="{% url 'accounts:seller_dashboard' %}">Главная</a>
+    <a href="{% url 'accounts:seller_products' %}">Товары</a>
+    <a href="{% url 'accounts:seller_stats' %}">Статистика</a>
+    <a href="{% url 'accounts:seller_references' %}">Справочники</a>
+</div>
+
+<form method="post" enctype="multipart/form-data" style="max-width: 800px;">
+    {% csrf_token %}
+    
+    <div class="form-group">
+        <label class="form-label" for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
+        {{ form.title }}
+        {% if form.title.errors %}
+            <ul class="errorlist">
+                {% for error in form.title.errors %}<li>{{ error }}</li>{% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+    <div class="form-group">
+        <label class="form-label" for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+        {{ form.description }}
+        {% if form.description.errors %}
+            <ul class="errorlist">
+                {% for error in form.description.errors %}<li>{{ error }}</li>{% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label class="form-label" for="{{ form.category_name.id_for_label }}">{{ form.category_name.label }}</label>
+            <div class="autocomplete-wrapper">
+                {{ form.category_name }}
+                <div id="category-suggestions" class="autocomplete-suggestions"></div>
+            </div>
+            {% if form.category_name.errors %}
+                <ul class="errorlist">
+                    {% for error in form.category_name.errors %}<li>{{ error }}</li>{% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="{{ form.brand_name.id_for_label }}">{{ form.brand_name.label }}</label>
+            <div class="autocomplete-wrapper">
+                {{ form.brand_name }}
+                <div id="brand-suggestions" class="autocomplete-suggestions"></div>
+            </div>
+            {% if form.brand_name.errors %}
+                <ul class="errorlist">
+                    {% for error in form.brand_name.errors %}<li>{{ error }}</li>{% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label class="form-label" for="{{ form.size.id_for_label }}">{{ form.size.label }}</label>
+            {{ form.size }}
+            {% if form.size.errors %}
+                <ul class="errorlist">
+                    {% for error in form.size.errors %}<li>{{ error }}</li>{% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="{{ form.custom_size.id_for_label }}">{{ form.custom_size.label }}</label>
+            {{ form.custom_size }}
+            {% if form.custom_size.errors %}
+                <ul class="errorlist">
+                    {% for error in form.custom_size.errors %}<li>{{ error }}</li>{% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label class="form-label" for="{{ form.price.id_for_label }}">{{ form.price.label }}</label>
+            {{ form.price }}
+            {% if form.price.errors %}
+                <ul class="errorlist">
+                    {% for error in form.price.errors %}<li>{{ error }}</li>{% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="{{ form.quantity.id_for_label }}">{{ form.quantity.label }}</label>
+            {{ form.quantity }}
+            {% if form.quantity.errors %}
+                <ul class="errorlist">
+                    {% for error in form.quantity.errors %}<li>{{ error }}</li>{% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label" for="{{ form.condition.id_for_label }}">{{ form.condition.label }}</label>
+        {{ form.condition }}
+        {% if form.condition.errors %}
+            <ul class="errorlist">
+                {% for error in form.condition.errors %}<li>{{ error }}</li>{% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+    <div class="form-group" style="display: flex; gap: 20px; align-items: center;">
+        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            {{ form.is_active }}
+            <span>{{ form.is_active.label }}</span>
+        </label>
+        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            {{ form.legit_check }}
+            <span>{{ form.legit_check.label }}</span>
+        </label>
+    </div>
+
+    <h3 style="font-size: 20px; margin-top: 40px; margin-bottom: 20px;">Изображения</h3>
+    {{ formset.management_form }}
+    <div class="image-upload-grid">
+        {% for form in formset %}
+            <div>
+                {% if form.instance.image %}
+                    <img src="{{ form.instance.image.url }}" alt="Preview" class="image-preview">
+                {% else %}
+                    <div class="image-preview" style="display: flex; align-items: center; justify-content: center; background: #f5f5f5; color: #999;">
+                        Нет изображения
+                    </div>
+                {% endif %}
+                {{ form.id }}
+                <div style="margin-top: 8px;">
+                    <label style="display: block; margin-bottom: 4px; font-size: 14px;">Изображение:</label>
+                    {{ form.image }}
+                </div>
+                <div style="margin-top: 8px;">
+                    <label style="display: block; margin-bottom: 4px; font-size: 14px;">Порядок:</label>
+                    {{ form.order }}
+                </div>
+                <div style="margin-top: 8px;">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        {{ form.is_main }}
+                        <span style="font-size: 14px;">Главное</span>
+                    </label>
+                </div>
+                {% if form.DELETE %}
+                    <div style="margin-top: 8px;">
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            {{ form.DELETE }}
+                            <span style="font-size: 14px; color: #c62828;">Удалить</span>
+                        </label>
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <div style="display: flex; gap: 12px; margin-top: 40px;">
+        <button type="submit" class="btn btn-inline">Сохранить</button>
+        <a href="{% url 'accounts:seller_products' %}" class="btn btn-secondary btn-inline" style="text-decoration: none; text-align: center;">Отмена</a>
+    </div>
+</form>
+
+<script>
+let categoryTimeout;
+let brandTimeout;
+
+function showAutocomplete(inputId, suggestionsId, url) {
+    const input = document.getElementById(inputId);
+    const suggestions = document.getElementById(suggestionsId);
+    const query = input.value.trim();
+    
+    if (!input || !suggestions) return;
+    
+    if (query.length < 1) {
+        suggestions.innerHTML = '';
+        suggestions.style.display = 'none';
+        return;
+    }
+    
+    // Дебаунс для уменьшения количества запросов
+    clearTimeout(inputId === 'category-autocomplete' ? categoryTimeout : brandTimeout);
+    
+    const timeout = setTimeout(function() {
+        fetch(`${url}?q=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => {
+                suggestions.innerHTML = '';
+                
+                if (data.results && data.results.length > 0) {
+                    data.results.forEach(function(item) {
+                        const div = document.createElement('div');
+                        div.className = 'autocomplete-item';
+                        div.textContent = item.text;
+                        div.onclick = function() {
+                            input.value = item.text;
+                            suggestions.innerHTML = '';
+                            suggestions.style.display = 'none';
+                        };
+                        suggestions.appendChild(div);
+                    });
+                    suggestions.style.display = 'block';
+                } else {
+                    suggestions.style.display = 'none';
+                }
+            })
+            .catch(function(error) {
+                console.error('Error:', error);
+                suggestions.style.display = 'none';
+            });
+    }, 300);
+    
+    if (inputId === 'category-autocomplete') {
+        categoryTimeout = timeout;
+    } else {
+        brandTimeout = timeout;
+    }
+}
+
+function hideAutocomplete(suggestionsId) {
+    const suggestions = document.getElementById(suggestionsId);
+    if (suggestions) {
+        suggestions.style.display = 'none';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const categoryInput = document.getElementById('category-autocomplete');
+    const brandInput = document.getElementById('brand-autocomplete');
+    
+    if (categoryInput) {
+        categoryInput.addEventListener('input', function() {
+            showAutocomplete('category-autocomplete', 'category-suggestions', '{% url "catalog:autocomplete_category" %}');
+        });
+        
+        categoryInput.addEventListener('focus', function() {
+            if (categoryInput.value.trim().length > 0) {
+                showAutocomplete('category-autocomplete', 'category-suggestions', '{% url "catalog:autocomplete_category" %}');
+            }
+        });
+        
+        categoryInput.addEventListener('blur', function() {
+            setTimeout(() => hideAutocomplete('category-suggestions'), 200);
+        });
+    }
+    
+    if (brandInput) {
+        brandInput.addEventListener('input', function() {
+            showAutocomplete('brand-autocomplete', 'brand-suggestions', '{% url "catalog:autocomplete_brand" %}');
+        });
+        
+        brandInput.addEventListener('focus', function() {
+            if (brandInput.value.trim().length > 0) {
+                showAutocomplete('brand-autocomplete', 'brand-suggestions', '{% url "catalog:autocomplete_brand" %}');
+            }
+        });
+        
+        brandInput.addEventListener('blur', function() {
+            setTimeout(() => hideAutocomplete('brand-suggestions'), 200);
+        });
+    }
+});
+</script>
+{% endblock %}
+

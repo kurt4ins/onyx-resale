@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} - Onyx{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h1 class="dashboard-title">{{ title }}</h1>
+</div>
+
+<div class="seller-nav">
+    <a href="{% url 'accounts:seller_dashboard' %}">Главная</a>
+    <a href="{% url 'accounts:seller_products' %}">Товары</a>
+    <a href="{% url 'accounts:seller_stats' %}">Статистика</a>
+    <a href="{% url 'accounts:seller_references' %}" class="active">Справочники</a>
+</div>
+
+<form method="post" enctype="multipart/form-data" style="max-width: 600px; margin-top: 40px;">
+    {% csrf_token %}
+    
+    {% if reference_type == 'brand' %}
+        <div class="form-group">
+            <label class="form-label" for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
+            {{ form.name }}
+            {% if form.name.errors %}
+                <ul class="errorlist">
+                    {% for error in form.name.errors %}<li>{{ error }}</li>{% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="{{ form.logo.id_for_label }}">{{ form.logo.label }}</label>
+            {{ form.logo }}
+            {% if form.logo.errors %}
+                <ul class="errorlist">
+                    {% for error in form.logo.errors %}<li>{{ error }}</li>{% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+    {% elif reference_type == 'category' %}
+        <div class="form-group">
+            <label class="form-label" for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
+            {{ form.name }}
+            {% if form.name.errors %}
+                <ul class="errorlist">
+                    {% for error in form.name.errors %}<li>{{ error }}</li>{% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="{{ form.parent.id_for_label }}">{{ form.parent.label }}</label>
+            {{ form.parent }}
+            {% if form.parent.errors %}
+                <ul class="errorlist">
+                    {% for error in form.parent.errors %}<li>{{ error }}</li>{% endfor %}
+                </ul>
+            {% endif %}
+            <small style="color: #666; font-size: 12px; margin-top: 4px; display: block;">Оставьте пустым для создания основной категории</small>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="{{ form.size_type.id_for_label }}">{{ form.size_type.label }}</label>
+            {{ form.size_type }}
+            {% if form.size_type.errors %}
+                <ul class="errorlist">
+                    {% for error in form.size_type.errors %}<li>{{ error }}</li>{% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+    {% elif reference_type == 'size' %}
+        <div class="form-group">
+            <label class="form-label" for="{{ form.size_type.id_for_label }}">{{ form.size_type.label }}</label>
+            {{ form.size_type }}
+            {% if form.size_type.errors %}
+                <ul class="errorlist">
+                    {% for error in form.size_type.errors %}<li>{{ error }}</li>{% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label" for="{{ form.value.id_for_label }}">{{ form.value.label }}</label>
+                {{ form.value }}
+                {% if form.value.errors %}
+                    <ul class="errorlist">
+                        {% for error in form.value.errors %}<li>{{ error }}</li>{% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="{{ form.display_value.id_for_label }}">{{ form.display_value.label }}</label>
+                {{ form.display_value }}
+                {% if form.display_value.errors %}
+                    <ul class="errorlist">
+                        {% for error in form.display_value.errors %}<li>{{ error }}</li>{% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label" for="{{ form.us_size.id_for_label }}">{{ form.us_size.label }}</label>
+                {{ form.us_size }}
+                {% if form.us_size.errors %}
+                    <ul class="errorlist">
+                        {% for error in form.us_size.errors %}<li>{{ error }}</li>{% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="{{ form.eu_size.id_for_label }}">{{ form.eu_size.label }}</label>
+                {{ form.eu_size }}
+                {% if form.eu_size.errors %}
+                    <ul class="errorlist">
+                        {% for error in form.eu_size.errors %}<li>{{ error }}</li>{% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="{{ form.cm_size.id_for_label }}">{{ form.cm_size.label }}</label>
+            {{ form.cm_size }}
+            {% if form.cm_size.errors %}
+                <ul class="errorlist">
+                    {% for error in form.cm_size.errors %}<li>{{ error }}</li>{% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <div style="display: flex; gap: 12px; margin-top: 40px;">
+        <button type="submit" class="btn btn-inline">Создать</button>
+        <a href="{% url 'accounts:seller_references' %}" class="btn btn-secondary btn-inline" style="text-decoration: none; text-align: center;">Отмена</a>
+    </div>
+</form>
+{% endblock %}
+

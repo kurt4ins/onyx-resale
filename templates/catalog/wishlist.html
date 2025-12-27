@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Избранное - Onyx{% endblock %}
+
+{% block content %}
+<h1 style="font-size: 32px; margin-bottom: 30px;">Избранное</h1>
+
+{% if wishlist_items %}
+    <div class="products-grid">
+        {% for item in wishlist_items %}
+            <a href="{% url 'catalog:product_detail' item.product.pk %}" class="product-card">
+                {% if item.product.images.all %}
+                    <img 
+                        src="{{ item.product.images.first.image.url }}" 
+                        alt="{{ item.product.title }}"
+                        class="product-image"
+                    >
+                {% else %}
+                    <div class="product-image" style="display: flex; align-items: center; justify-content: center; color: #999;">
+                        Нет изображения
+                    </div>
+                {% endif %}
+                <div class="product-title">{{ item.product.title }}</div>
+                <div class="product-price">{{ item.product.price|floatformat:0 }} ₽</div>
+                <div class="product-meta">
+                    {% if item.product.brand %}{{ item.product.brand.name }}{% endif %}
+                    {% if item.product.size %} • Размер: {{ item.product.display_size }}{% endif %}
+                </div>
+                <a 
+                    href="{% url 'catalog:toggle_wishlist' item.product.id %}" 
+                    class="wishlist-btn active"
+                    style="margin-top: 12px; text-align: center;"
+                >
+                    Удалить из избранного
+                </a>
+            </a>
+        {% endfor %}
+    </div>
+{% else %}
+    <div style="text-align: center; padding: 60px 20px;">
+        <p style="font-size: 18px; color: #666; margin-bottom: 20px;">В избранном пока ничего нет</p>
+        <a href="{% url 'catalog:product_list' %}" class="btn btn-inline">Перейти в каталог</a>
+    </div>
+{% endif %}
+{% endblock %}
+

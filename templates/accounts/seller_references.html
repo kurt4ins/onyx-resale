@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Справочники - Onyx{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h1 class="dashboard-title">Справочники</h1>
+</div>
+
+<div class="seller-nav">
+    <a href="{% url 'accounts:seller_dashboard' %}">Главная</a>
+    <a href="{% url 'accounts:seller_products' %}">Товары</a>
+    <a href="{% url 'accounts:seller_stats' %}">Статистика</a>
+    <a href="{% url 'accounts:seller_references' %}" class="active">Справочники</a>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 40px;">
+    <!-- Бренды -->
+    <div style="border: 1px solid #e5e5e5; border-radius: 8px; padding: 24px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="font-size: 20px; font-weight: 600;">Бренды</h2>
+            <a href="{% url 'accounts:seller_brand_create' %}" class="btn btn-inline" style="padding: 8px 16px; font-size: 14px; text-decoration: none;">
+                + Добавить
+            </a>
+        </div>
+        {% if brands %}
+            <div style="display: flex; flex-direction: column; gap: 8px; max-height: 400px; overflow-y: auto;">
+                {% for brand in brands %}
+                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #f9f9f9; border-radius: 4px;">
+                        {% if brand.logo %}
+                            <img src="{{ brand.logo.url }}" alt="{{ brand.name }}" style="width: 40px; height: 40px; object-fit: contain;">
+                        {% endif %}
+                        <span style="flex: 1;">{{ brand.name }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p style="color: #666; text-align: center; padding: 20px;">Нет брендов</p>
+        {% endif %}
+    </div>
+
+    <!-- Категории -->
+    <div style="border: 1px solid #e5e5e5; border-radius: 8px; padding: 24px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="font-size: 20px; font-weight: 600;">Категории</h2>
+            <a href="{% url 'accounts:seller_category_create' %}" class="btn btn-inline" style="padding: 8px 16px; font-size: 14px; text-decoration: none;">
+                + Добавить
+            </a>
+        </div>
+        {% if categories %}
+            <div style="display: flex; flex-direction: column; gap: 8px; max-height: 400px; overflow-y: auto;">
+                {% for category in categories %}
+                    <div style="padding: 12px; background: #f9f9f9; border-radius: 4px;">
+                        <div style="font-weight: 500;">{{ category.name }}</div>
+                        {% if category.size_type %}
+                            <div style="font-size: 12px; color: #666; margin-top: 4px;">Тип размера: {{ category.get_size_type_display }}</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p style="color: #666; text-align: center; padding: 20px;">Нет категорий</p>
+        {% endif %}
+    </div>
+
+    <!-- Размеры -->
+    <div style="border: 1px solid #e5e5e5; border-radius: 8px; padding: 24px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="font-size: 20px; font-weight: 600;">Размеры</h2>
+            <a href="{% url 'accounts:seller_size_create' %}" class="btn btn-inline" style="padding: 8px 16px; font-size: 14px; text-decoration: none;">
+                + Добавить
+            </a>
+        </div>
+        {% if sizes %}
+            <div style="display: flex; flex-direction: column; gap: 8px; max-height: 400px; overflow-y: auto;">
+                {% for size in sizes %}
+                    <div style="padding: 12px; background: #f9f9f9; border-radius: 4px;">
+                        <div style="font-weight: 500;">{{ size.get_size_type_display }}: {{ size.display_value }}</div>
+                        {% if size.us_size or size.eu_size %}
+                            <div style="font-size: 12px; color: #666; margin-top: 4px;">
+                                {% if size.us_size %}US: {{ size.us_size }}{% endif %}
+                                {% if size.us_size and size.eu_size %} • {% endif %}
+                                {% if size.eu_size %}EU: {{ size.eu_size }}{% endif %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p style="color: #666; text-align: center; padding: 20px;">Нет размеров</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

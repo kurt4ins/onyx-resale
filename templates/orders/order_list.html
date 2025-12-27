@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Мои заказы - Onyx{% endblock %}
+
+{% block content %}
+<div style="max-width: 1000px; margin: 0 auto; padding: 40px 20px;">
+    <h1 style="font-size: 32px; margin-bottom: 30px;">Мои заказы</h1>
+
+    {% if orders %}
+        <div style="display: grid; gap: 20px;">
+            {% for order in orders %}
+                <div style="padding: 24px; border: 1px solid #e5e5e5; border-radius: 8px; background: #ffffff;">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 20px;">
+                        <div>
+                            <h3 style="font-size: 20px; margin-bottom: 8px;">
+                                <a href="{% url 'orders:order_detail' pk=order.id %}" style="color: #000; text-decoration: none;">
+                                    Заказ #{{ order.id }}
+                                </a>
+                            </h3>
+                            <p style="color: #666; font-size: 14px;">{{ order.created_at|date:"d.m.Y H:i" }}</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <span style="display: inline-block; padding: 6px 12px; background: #f0f0f0; border-radius: 4px; font-size: 14px;">
+                                {{ order.get_status_display }}
+                            </span>
+                            <p style="font-size: 20px; font-weight: 600; margin-top: 8px;">{{ order.get_total_price|floatformat:0 }} ₽</p>
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; gap: 12px;">
+                        {% for item in order.items.all|slice:":3" %}
+                            <div style="display: flex; gap: 12px; padding: 12px; background: #f9f9f9; border-radius: 4px;">
+                                {% if item.product.images.first %}
+                                    <img src="{{ item.product.images.first.image.url }}" alt="{{ item.product.title }}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;">
+                                {% else %}
+                                    <div style="width: 60px; height: 60px; background: #e5e5e5; border-radius: 4px;"></div>
+                                {% endif %}
+                                <div style="flex: 1;">
+                                    <p style="font-size: 14px; font-weight: 500;">{{ item.product.title }}</p>
+                                    <p style="color: #666; font-size: 12px;">{{ item.quantity }} шт. × {{ item.price|floatformat:0 }} ₽</p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        {% if order.items.count > 3 %}
+                            <p style="color: #666; font-size: 14px; text-align: center;">и еще {{ order.items.count|add:"-3" }} товаров</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #e5e5e5;">
+                        <a href="{% url 'orders:order_detail' pk=order.id %}" style="color: #000; text-decoration: underline; font-size: 14px;">Подробнее</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 60px 20px;">
+            <p style="font-size: 18px; color: #666; margin-bottom: 30px;">У вас пока нет заказов</p>
+            <a href="{% url 'catalog:product_list' %}" class="btn btn-inline" style="text-decoration: none;">Перейти в каталог</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+

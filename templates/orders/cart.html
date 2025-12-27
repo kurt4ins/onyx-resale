@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Корзина - Onyx{% endblock %}
+
+{% block content %}
+<div style="max-width: 1000px; margin: 0 auto; padding: 40px 20px;">
+    <h1 style="font-size: 32px; margin-bottom: 30px;">Корзина</h1>
+
+    {% if cart_items %}
+        <div style="display: grid; gap: 20px;">
+            {% for item in cart_items %}
+                <div style="display: flex; gap: 20px; padding: 20px; border: 1px solid #e5e5e5; border-radius: 8px; background: #ffffff;">
+                    {% if item.product.images.first %}
+                        <img src="{{ item.product.images.first.image.url }}" alt="{{ item.product.title }}" style="width: 120px; height: 120px; object-fit: cover; border-radius: 4px;">
+                    {% else %}
+                        <div style="width: 120px; height: 120px; background: #f5f5f5; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #999;">
+                            Нет фото
+                        </div>
+                    {% endif %}
+                    
+                    <div style="flex: 1;">
+                        <h3 style="font-size: 18px; margin-bottom: 8px;">
+                            <a href="{% url 'catalog:product_detail' pk=item.product.id %}" style="color: #000; text-decoration: none;">
+                                {{ item.product.title }}
+                            </a>
+                        </h3>
+                        {% if item.product.brand %}
+                            <p style="color: #666; margin-bottom: 8px;">{{ item.product.brand.name }}</p>
+                        {% endif %}
+                        <p style="font-size: 16px; font-weight: 600; margin-bottom: 12px;">{{ item.price|floatformat:0 }} ₽</p>
+                        
+                        <div style="display: flex; gap: 12px; align-items: center;">
+                            <form method="post" action="{% url 'orders:update_cart_item' item_id=item.id %}" style="display: flex; align-items: center; gap: 8px;">
+                                {% csrf_token %}
+                                <label style="font-size: 14px;">Количество:</label>
+                                <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.quantity }}" style="width: 60px; padding: 6px; border: 1px solid #e5e5e5; border-radius: 4px;">
+                                <button type="submit" style="padding: 6px 12px; background: #000; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">Обновить</button>
+                            </form>
+                            
+                            <form method="post" action="{% url 'orders:remove_from_cart' item_id=item.id %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" style="padding: 6px 12px; background: #dc3545; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">Удалить</button>
+                            </form>
+                        </div>
+                        
+                        <p style="margin-top: 12px; font-size: 16px; font-weight: 600;">
+                            Итого: {% widthratio item.price 1 item.quantity %} ₽
+                        </p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div style="margin-top: 40px; padding: 30px; background: #f9f9f9; border-radius: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="font-size: 24px;">Итого:</h2>
+                <p style="font-size: 28px; font-weight: 600;">{{ total_price|floatformat:0 }} ₽</p>
+            </div>
+            <a href="{% url 'orders:checkout' %}" class="btn btn-inline" style="display: block; text-align: center; text-decoration: none; width: 100%;">Оформить заказ</a>
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 60px 20px;">
+            <p style="font-size: 18px; color: #666; margin-bottom: 30px;">Ваша корзина пуста</p>
+            <a href="{% url 'catalog:product_list' %}" class="btn btn-inline" style="text-decoration: none;">Перейти в каталог</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
